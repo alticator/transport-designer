@@ -1,0 +1,7 @@
+/* 
+    Alticator 2022
+    Traffic Designer
+*/
+
+.btn-gradient {background: linear-gradient(to bottom right, magenta, #00d0ff); color: white; border: none;}
+.btn-gradient:hover {filter: brightness(120%); color: white;}
