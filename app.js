@@ -1,6 +1,8 @@
 // Alticator 2022
 // Transport Designer
 
+// -------- Declarations --------
+
 var bicyclesManufactured = 0;
 var bicyclesInventory = 0;
 var money = 10000;
@@ -19,6 +21,8 @@ var productionBuffer = 0;
 var assemblyTimer = 0;
 var assemblyInterval = "not in use";
 var level1AssemblyInterval = 120;
+
+// -------- Bicycle Manufacturing --------
 
 function newBicycle() {
     if (money >= cost.bicycle){
@@ -47,14 +51,18 @@ function runAssemblyLines() {
 }
 
 function newAssemblyLine() {
-    assemblyLines++;
-    assemblyLineCost *= 1.5;
-    if (assemblyInterval == "not in use") {
-        assemblyInterval = level1AssemblyInterval;
+    if (money >= assemblyLineCost) {
+        money -= assemblyLineCost;
+        assemblyLines++;
+        assemblyLineCost *= 1.3;
+        if (assemblyInterval == "not in use") {
+            assemblyInterval = level1AssemblyInterval;
+        }
+        else {
+            assemblyInterval /= 1.2;
+        }
     }
-    else {
-        assemblyInterval /= 1.2;
-    }
+    $("#money").html(money);
     $("#assembly-lines").html(assemblyLines.toLocaleString("en"));
     $("#assembly-line-cost").html(assemblyLineCost.toLocaleString("en"));
 }
@@ -90,6 +98,45 @@ function milestones() {
     if (stage < 1 && bicyclesManufactured >= 5) {
         stage++;
         $("#assembly-line-menu").show();
+    }
+    if (stage < 2 && bicyclesManufactured >= 100) {
+        stage++;
+        $("#development-menu").show();
+        newDevelopment("ebike", "E-Bikes", "Add electric motors to your bicycles to make them go faster. Increases production price by 50 and sale price by 150.", 30000, "startEBikes()");
+    }
+}
+
+// -------- Messages --------
+
+function newMessage(content) {
+    $("#messages").prepend(`<div class="list-group-item border-info">${content}</div>`);
+}
+
+// -------- Developments --------
+
+function newDevelopment(id, title, description, cost, onclick) {
+    var item = `<button onclick="${onclick}" id="development-${id}" class="list-group-item">
+        <h5 class="pt-2">${title}</h5>
+        <p>${description}</p>
+        <p><b>Cost: </b>${cost.toLocaleString("en")}</p>
+        </button>`
+    
+    $("#development-list").prepend(item);
+}
+
+function removeDevelopment(id) {
+    $("#development-" + id).remove();
+}
+
+// -------- E-Bikes --------
+
+function startEBikes() {
+    if (money >= 30000) {
+        removeDevelopment("ebike")
+        money -= 30000;
+        cost.bicycle += 50;
+        bicyclePrice += 150;
+        newMessage(`<h5>Production of E-Bikes Started!</h5><p>Sale price now ${bicyclePrice} and production cost ${cost.bicycle}`);
     }
 }
 
