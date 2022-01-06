@@ -115,11 +115,17 @@ function newMessage(content) {
 // -------- Developments --------
 
 function newDevelopment(id, title, description, cost, onclick) {
-    var item = `<button onclick="${onclick}" id="development-${id}" class="list-group-item">
+    // var item = `<button onclick="${onclick}" id="development-${id}" class="list-group-item">
+    //     <h5 class="pt-2">${title}</h5>
+    //     <p>${description}</p>
+    //     <p><b>Cost: </b>${cost.toLocaleString("en")}</p>
+    //     </button>`
+
+    var item = `<div id="development-${id}" class="list-group-item">
         <h5 class="pt-2">${title}</h5>
         <p>${description}</p>
-        <p><b>Cost: </b>${cost.toLocaleString("en")}</p>
-        </button>`
+        <button onclick="${onclick}" class="btn btn-primary"><b>Buy for </b>${cost.toLocaleString("en")}</button>
+        </div>`
     
     $("#development-list").prepend(item);
 }
