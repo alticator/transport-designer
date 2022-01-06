@@ -95,14 +95,19 @@ function upgradeMarketing() {
 // -------- Milestones --------
 
 function milestones() {
-    if (stage < 1 && bicyclesManufactured >= 5) {
+    if (stage <= 0 && bicyclesManufactured >= 5) {
         stage++;
         $("#assembly-line-menu").show();
     }
-    if (stage < 2 && bicyclesManufactured >= 100) {
+    if (stage <= 1 && bicyclesManufactured >= 100) {
         stage++;
         $("#development-menu").show();
         newDevelopment("ebike", "E-Bikes", "Add electric motors to your bicycles to make them go faster. Increases production price by 50 and sale price by 150.", 30000, "startEBikes()");
+    }
+    if (stage <= 2 && money >= 50000) {
+        stage++;
+        newMessage("<h5>Preview Completed!</h5><p>You have successfully completed the preview of the game! Version 1 is on its way.</p>");
+        completed = true;
     }
 }
 
