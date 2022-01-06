@@ -107,7 +107,6 @@ function milestones() {
     if (stage <= 2 && money >= 50000) {
         stage++;
         newMessage("<h5>Preview Completed!</h5><p>You have successfully completed the preview of the game! Version 1 is on its way.</p>");
-        completed = true;
     }
 }
 
