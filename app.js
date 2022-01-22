@@ -7,12 +7,14 @@ var bicyclesManufactured = 0;
 var bicyclesInventory = 0;
 var money = 10000;
 var cost = {
-    bicycle: 300
+    bicycle: 300,
+    car: 12000,
 }
 var marketingLevel = 1;
 var marketingTimer = 0;
 var saleInterval = 120;
 var bicyclePrice = 600;
+var carPrice = 20000;
 var marketingCost = 300;
 var stage = 0;
 var assemblyLines = 0;
@@ -21,6 +23,14 @@ var productionBuffer = 0;
 var assemblyTimer = 0;
 var assemblyInterval = "not in use";
 var level1AssemblyInterval = 120;
+var carFactories = 0;
+var carFactoryCost = 30000;
+var carAssemblyInterval = "not in use"
+var level1CarAssemblyInterval = 480;
+var carAssemblyTimer = 0;
+var carsManufactured = 0;
+var carsInventory = 0;
+var carsInUse = false;
 
 // -------- Bicycle Manufacturing --------
 
@@ -104,10 +114,9 @@ function milestones() {
         $("#development-menu").show();
         newDevelopment("ebike", "E-Bikes", "Add electric motors to your bicycles to make them go faster. Increases production price by 50 and sale price by 150.", 30000, "startEBikes()");
     }
-    if (stage <= 2 && money >= 50000) {
+    if (stage <= 2 && bicyclesManufactured >= 400) {
         stage++;
-        newMessage("<h5>Preview Completed!</h5><p>You have successfully completed the preview of the game! Version 1 is on its way.</p>");
-        completed = true;
+        newDevelopment("cars", "Cars", "Start making cars alongside bikes.", 40000, "startCars()")
     }
 }
 
@@ -120,12 +129,6 @@ function newMessage(content) {
 // -------- Developments --------
 
 function newDevelopment(id, title, description, cost, onclick) {
-    // var item = `<button onclick="${onclick}" id="development-${id}" class="list-group-item">
-    //     <h5 class="pt-2">${title}</h5>
-    //     <p>${description}</p>
-    //     <p><b>Cost: </b>${cost.toLocaleString("en")}</p>
-    //     </button>`
-
     var item = `<div id="development-${id}" class="list-group-item">
         <h5 class="pt-2">${title}</h5>
         <p>${description}</p>
@@ -151,11 +154,57 @@ function startEBikes() {
     }
 }
 
+// -------- Cars --------
+
+function startCars() {
+    if (money >= 40000) {
+        removeDevelopment("cars");
+        carsInUse = true;
+        newMessage(`<h5>Production of Cars Started!</h5><p>Cars cost ${cost.car} but they sell for ${carPrice}`);
+        $("#manufactured-list").append(`<br>Cars: <span id="cars-counter">0</span>`);
+        $("#inventory-list").append(`<br>Cars: <span id="card-inventory">0</span>`);
+        $("#manufacturing-menu").append('<br><button onclick="newCarFactory()" class="btn btn-primary">Car Factory</button><span id="car-factories">0</span><br>Cost: <span id="car-factory-cost">30000</span>');
+    }
+}
+
+function newCarFactory() {
+    if (money >= carFactoryCost) {
+        money -= carFactoryCost;
+        carFactories++;
+        carFactoryCost *= 1.3;
+        if (carAssemblyInterval == "not in use") {
+            carAssemblyInterval = level1AssemblyInterval;
+        }
+        else {
+            carAssemblyInterval /= 1.1;
+        }
+    }
+    $("#money").html(money);
+    $("#car-factories").html(carFactories.toLocaleString("en"));
+    $("#car-factory-cost").html(carFactoryCost.toLocaleString("en"));
+}
+
+function runCarFactories() {
+    if (carsInUse) {
+        carAssemblyTimer++;
+        if (carAssemblyTimer >= carAssemblyInterval && money >= cost.car) {
+            carsManufactured++;
+            carsInventory++;
+            money -= cost.car;
+            $("#cars-counter").html(bicyclesManufactured.toLocaleString("en"));
+            $("#cars-inventory").html(bicyclesInventory.toLocaleString("en"));
+            $("#money").html(money.toLocaleString("en"));
+            carAssemblyTimer = 0;
+        }
+    }
+}
+
 // -------- Main Loop --------
 
 function mainLoop() {
     sales();
     runAssemblyLines();
+    runCarFactories();
     milestones();
 }
 
